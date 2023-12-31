@@ -12,7 +12,7 @@ defmodule Core.Route.Authentication do
   plug(:match)
   plug(:dispatch)
 
-  post "/auth" do
-    conn |> send_resp(200, "")
+  get "/code" do
+    conn |> send_resp(200, "Code sent")
   end
 end
