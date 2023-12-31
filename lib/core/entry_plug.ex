@@ -1,4 +1,4 @@
-defmodule Broth do
+defmodule Core.EntryPlug do
   import Plug.Conn
 
   alias Core.Route.Authentication
