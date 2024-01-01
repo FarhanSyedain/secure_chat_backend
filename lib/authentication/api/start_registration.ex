@@ -14,9 +14,12 @@ defmodule Authentication.Api.StartRegistration do
         :retry_later ->
           conn
           |> put_resp_content_type("application/json")
-          |> send_resp(200, Jason.encode!(%{code: "retry_later", message: "Please try again later"}))
+          |> send_resp(
+            200,
+            Jason.encode!(%{code: "retry_later", message: "Please try again later"})
+          )
 
-          :too_many_requests ->
+        :too_many_requests ->
           conn
           |> put_resp_content_type("application/json")
           |> send_resp(
@@ -31,7 +34,7 @@ defmodule Authentication.Api.StartRegistration do
       _ ->
         conn
         |> put_resp_content_type("application/json")
-        |> send_resp(400, Jason.encode!(%{error: "Phone number is required"}))
+        |> send_resp(400, Jason.encode!(%{code: "missing_fields", message: "Missing fields"}))
     end
   end
 
@@ -65,7 +68,7 @@ defmodule Authentication.Api.StartRegistration do
     end
   end
 
-  defp send_code(phone_number, otp) do
+  defp send_code(_phone_number, _otp) do
     :ok
   end
 end
