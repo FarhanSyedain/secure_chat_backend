@@ -1,7 +1,7 @@
 defmodule Core.EntryPlug do
   import Plug.Conn
 
-  alias Core.Route.Authentication
+  alias Authentication.Route.AuthenticationRoutes
 
   @type json :: String.t() | number | boolean | nil | [json] | %{String.t() => json}
 
@@ -14,7 +14,7 @@ defmodule Core.EntryPlug do
     send_resp(conn, 200, "")
   end
 
-  forward("/auth", to: Authentication)
+  forward("/auth", to: AuthenticationRoutes)
 
   get _ do
     send_resp(conn, 404, "not found")
