@@ -52,7 +52,8 @@ defmodule Authentication.Api.StartRegistration do
 
         session_otp_retrieval_count = session.otp_retrieval_count
 
-        if current_time > session_otp_retrieval_time and session_otp_retrieval_count >= 1 do
+        if current_time < NaiveDateTime.add(session_otp_retrieval_time, 1, :minute) and
+             session_otp_retrieval_count >= 1 do
           :retry_later
         else
           if session_otp_retrieval_count >= 4 and
