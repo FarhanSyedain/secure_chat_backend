@@ -6,10 +6,17 @@ defmodule Authentication.Api.StartRegistration do
   def getCode(conn) do
     with %{"phone_number" => phone_number} <- conn.query_params do
       case handle_otp_request(phone_number) do
-        :ok ->
+        {:ok, session_id} ->
           conn
           |> put_resp_content_type("application/json")
-          |> send_resp(200, Jason.encode!(%{code: "otp_sent", message: "OTP sent successfully"}))
+          |> send_resp(
+            200,
+            Jason.encode!(%{
+              code: "otp_sent",
+              data: %{session_id: session_id},
+              message: "OTP sent successfully"
+            })
+          )
 
         :retry_later ->
           conn
@@ -40,8 +47,8 @@ defmodule Authentication.Api.StartRegistration do
 
   defp handle_otp_request(phone_number) do
     with nil <- RegistrationSession.get(phone_number) do
-      {:ok, otp} = RegistrationSession.create(phone_number)
-      send_code(phone_number, otp)
+      {:ok, otp, session_id} = RegistrationSession.create(phone_number)
+      send_code(phone_number, otp, session_id)
     else
       session ->
         current_time = NaiveDateTime.truncate(NaiveDateTime.utc_now(), :second)
@@ -63,13 +70,14 @@ defmodule Authentication.Api.StartRegistration do
             {:ok, otp} =
               RegistrationSession.update_otp(phone_number, session_otp_retrieval_count + 1)
 
-            send_code(phone_number, otp)
+            send_code(phone_number, otp, session.session_id)
           end
         end
     end
   end
 
-  defp send_code(_phone_number, _otp) do
-    :ok
+  defp send_code(_phone_number, otp, session_id) do
+    IO.puts("The current otp is #{otp}")
+    {:ok, session_id}
   end
 end

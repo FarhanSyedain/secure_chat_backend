@@ -7,17 +7,21 @@ defmodule Authentication.Data.Queries.RegistrationSession do
   def create(phone_number) do
     otp = generate_otp()
 
+    session_id = Ecto.UUID.generate()
+
     %RegistrationSession{
       phone_number: phone_number,
       otp: otp,
       session_creation_time: NaiveDateTime.truncate(NaiveDateTime.utc_now(), :second),
       otp_retrieval_count: 0,
       last_otp_retrieval_time: NaiveDateTime.truncate(NaiveDateTime.utc_now(), :second),
-      incorrect_attempt_count: 0
+      incorrect_attempt_count: 0,
+      session_id: session_id,
+      is_verified: false
     }
     |> Repo.insert!()
 
-    {:ok, otp}
+    {:ok, otp, session_id}
   end
 
   def get(phone_number) do
@@ -25,6 +29,19 @@ defmodule Authentication.Data.Queries.RegistrationSession do
     from(rs in RegistrationSession, where: rs.phone_number == ^phone_number)
     |> Repo.one()
   end
+
+  def get_by_session_id(session_id) do
+    from(rs in RegistrationSession, where: rs.session_id == ^session_id)
+    |> Repo.one()
+  end
+
+  def session_id_exists?(session_id) do
+    from(rs in RegistrationSession, where: rs.session_id == ^session_id and rs.is_verified == false)
+    |> Repo.one()
+    |> is_nil()
+    |> Kernel.not()
+  end
+
 
   def delete(phone_number) do
     from(rs in RegistrationSession, where: rs.phone_number == ^phone_number)
