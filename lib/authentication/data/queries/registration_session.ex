@@ -35,12 +35,13 @@ defmodule Authentication.Data.Queries.RegistrationSession do
   end
 
   def session_id_exists?(session_id) do
-    from(rs in RegistrationSession, where: rs.session_id == ^session_id and rs.is_verified == false)
+    from(rs in RegistrationSession,
+      where: rs.session_id == ^session_id and rs.is_verified == false
+    )
     |> Repo.one()
     |> is_nil()
     |> Kernel.not()
   end
-
 
   def delete(phone_number) do
     from(rs in RegistrationSession, where: rs.phone_number == ^phone_number)
@@ -82,15 +83,14 @@ defmodule Authentication.Data.Queries.RegistrationSession do
         :ok
 
       false ->
-        increase_incorrect_attempt_count(session_id,registration_session.incorrect_attempt_count)
+        increase_incorrect_attempt_count(session_id, registration_session.incorrect_attempt_count)
         :otp_mismatch
     end
   end
-  defp increase_incorrect_attempt_count(session_id,previous_count) do
+
+  defp increase_incorrect_attempt_count(session_id, previous_count) do
     from(rs in RegistrationSession, where: rs.session_id == ^session_id)
-    |> Repo.update_all(
-      set: [ incorrect_attempt_count: previous_count + 1]
-    )
+    |> Repo.update_all(set: [incorrect_attempt_count: previous_count + 1])
   end
 
   @spec validate_session(any()) :: any()
@@ -113,5 +113,22 @@ defmodule Authentication.Data.Queries.RegistrationSession do
     |> Base.encode16()
     |> String.replace(~r/[^0-9]/, "")
     |> String.slice(0..(6 - 1))
+  end
+
+  def verify_registration_session(session_id, phone_number) do
+    registration_session = get(phone_number)
+
+    case registration_session do
+      nil ->
+        :error
+      _ ->
+        case registration_session.is_verified and registration_session.session_id == session_id do
+          true ->
+            :ok
+
+          false ->
+            :error
+        end
+    end
   end
 end
