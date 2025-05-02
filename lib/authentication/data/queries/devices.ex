@@ -22,4 +22,12 @@ defmodule Authentication.Data.Queries.Devices do
   def deleteAll(user) do
     from(device in Device, where: device.user_id == ^user.id) |> Repo.delete_all()
   end
+
+  def get_device(device_id,uuid) do
+    from(d in Device,
+      where: d.device_id == ^device_id and d.uuid == ^uuid,
+      select: d
+    )
+    |> Repo.one()
+  end
 end
