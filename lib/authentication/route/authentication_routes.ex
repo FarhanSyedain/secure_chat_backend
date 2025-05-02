@@ -1,6 +1,8 @@
 defmodule Authentication.Route.AuthenticationRoutes do
   alias Authentication.Api.StartRegistration
   alias Authentication.Api.ConfirmRegistration
+  alias Authentication.Api.UserExists
+  alias Authentication.Api.Register
 
   use Plug.Router
 
@@ -19,5 +21,12 @@ defmodule Authentication.Route.AuthenticationRoutes do
 
   post "/session/post" do
     conn |> ConfirmRegistration.confirm_code()
+  end
+
+  post "user/existence" do
+    conn |> UserExists.user_exists()
+  end
+  post "user/create" do
+    conn |> Register.register()
   end
 end
