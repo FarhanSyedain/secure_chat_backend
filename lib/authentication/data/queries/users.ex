@@ -62,6 +62,11 @@ defmodule Authentication.Data.Queries.Users do
     |> Repo.one()
   end
 
+  def get_user_by_uuid(uuid) do
+    from(u in User, where: u.uuid == ^uuid)
+    |> Repo.one()
+  end
+
 
   def update_user(phone_number, registration_id) do
 
