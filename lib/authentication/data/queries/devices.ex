@@ -5,9 +5,13 @@ defmodule Authentication.Data.Queries.Devices do
 
   @spec create_device(atom() | %{:id => any(), optional(any()) => any()}, any()) :: any()
   def create_device(user, auth_token,device_id \\ 1) do
+    
+    token_salt = Ecto.UUID.generate()
+    token = :crypto.hash(:sha256, token_salt <> auth_token)
+
     %Device{
-      token: auth_token,
-      token_salt: Ecto.UUID.generate(),
+      token: token,
+      token_salt: token,
       device_id: device_id,
       uuid: Ecto.UUID.generate(),
       user_id: user.id
