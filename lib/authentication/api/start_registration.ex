@@ -1,5 +1,6 @@
 defmodule Authentication.Api.StartRegistration do
   import Plug.Conn
+  require Logger
   alias Authentication.Data.Queries.RegistrationSession
 
   @spec getCode(Plug.Conn.t()) :: Plug.Conn.t()
@@ -77,7 +78,7 @@ defmodule Authentication.Api.StartRegistration do
   end
 
   defp send_code(_phone_number, otp, session_id) do
-    IO.puts("The current otp is #{otp}")
+    Logger.info("Sending OTP: #{otp} to phone number")
     {:ok, session_id}
   end
 end
