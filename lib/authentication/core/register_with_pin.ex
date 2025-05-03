@@ -5,7 +5,7 @@ defmodule Authentication.Core.RegisterWithPin do
 
   @seven_days 60 * 60 * 24 * 7
 
-  def verify_and_register(phone_number, registration_id, pin, auth_token) do
+  def verify_and_register(phone_number, registration_id, pin, auth_token,identity_key) do
     user = Users.get_user(phone_number)
 
     case verify_registration_rate_limit(user) do
@@ -19,7 +19,8 @@ defmodule Authentication.Core.RegisterWithPin do
           phone_number,
           registration_id,
           pin,
-          auth_token
+          auth_token,
+          identity_key
         )
     end
   end
@@ -30,13 +31,15 @@ defmodule Authentication.Core.RegisterWithPin do
          phone_number,
          registration_id,
          pin,
-         auth_token
+         auth_token,
+         identity_key
        ) do
+
     time_since_user_activity =
       NaiveDateTime.diff(NaiveDateTime.utc_now(), user.last_seen, :second)
 
     if time_since_user_activity > @seven_days do
-      RegisterNewUser.register_new_user(phone_number, registration_id, auth_token)
+      RegisterNewUser.register_new_user(phone_number, registration_id, auth_token,identity_key)
     else
       process_pin_verification(
         user,
@@ -44,7 +47,8 @@ defmodule Authentication.Core.RegisterWithPin do
         pin,
         phone_number,
         registration_id,
-        auth_token
+        auth_token,
+        identity_key
       )
     end
   end
@@ -55,7 +59,8 @@ defmodule Authentication.Core.RegisterWithPin do
          pin,
          phone_number,
          registration_id,
-         auth_token
+         auth_token,
+         identity_key
        ) do
     if incorrect_attempt_count >= 3 do
       :blocked
@@ -65,7 +70,7 @@ defmodule Authentication.Core.RegisterWithPin do
       hashed_input_pin = :crypto.hash(:sha256, user_pin_salt <> pin)
 
       if hashed_input_pin == hashed_user_pin do
-        RegisterNewUser.register_new_user(phone_number, registration_id, auth_token)
+        RegisterNewUser.register_new_user(phone_number, registration_id, auth_token,identity_key)
       else
         process_incorrect_pin(user)
       end

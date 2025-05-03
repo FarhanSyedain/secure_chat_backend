@@ -36,13 +36,14 @@ defmodule Authentication.Data.Queries.Users do
     :ok
   end
 
-  def create_user(phone_number, registration_id) do
+  def create_user(phone_number, registration_id,identity_key) do
 
     %User{
       phone_number: phone_number,
       uuid: Ecto.UUID.generate(),
       registration_id: registration_id,
-      last_seen: NaiveDateTime.truncate(NaiveDateTime.utc_now(), :second)
+      last_seen: NaiveDateTime.truncate(NaiveDateTime.utc_now(), :second),
+      identity_key: identity_key,
     }
     |> Repo.insert!()
   end
@@ -68,13 +69,14 @@ defmodule Authentication.Data.Queries.Users do
   end
 
 
-  def update_user(phone_number, registration_id) do
+  def update_user(phone_number, registration_id,identity_key) do
 
     from(u in User, where: u.phone_number == ^phone_number)
     |> Repo.update_all(
       set: [
         registration_id: registration_id,
-        last_seen: NaiveDateTime.truncate(NaiveDateTime.utc_now(), :second)
+        last_seen: NaiveDateTime.truncate(NaiveDateTime.utc_now(), :second),
+        identity_key: identity_key,
       ]
     )
 

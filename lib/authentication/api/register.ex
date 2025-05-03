@@ -12,7 +12,8 @@ defmodule Authentication.Api.Register do
         "session_id" => session_id,
         "registration_id" => registration_id,
         "phone_number" => phone_number,
-        "auth_token" => auth_token
+        "auth_token" => auth_token,
+        "identity_key" => identity_key,
       } ->
         cond do
           :error == RegistrationSession.verify_registration_session(session_id, phone_number) ->
@@ -28,8 +29,8 @@ defmodule Authentication.Api.Register do
             pin = conn.body_params["pin"]
 
             case has_pin_verification do
-              false -> register(conn, phone_number, registration_id, auth_token)
-              true -> verify_pin(conn, phone_number, registration_id, pin, auth_token)
+              false -> register(conn, phone_number, registration_id, auth_token,identity_key)
+              true -> verify_pin(conn, phone_number, registration_id, pin, auth_token,identity_key)
             end
         end
 
@@ -40,12 +41,13 @@ defmodule Authentication.Api.Register do
     end
   end
 
-  defp verify_pin(conn, phone_number, registration_id, pin, auth_token) do
+  defp verify_pin(conn, phone_number, registration_id, pin, auth_token,identity_key) do
     case RegisterWithPin.verify_and_register(
            phone_number,
            registration_id,
            pin,
-           auth_token
+           auth_token,
+           identity_key
          ) do
       :blocked ->
         conn
@@ -81,11 +83,12 @@ defmodule Authentication.Api.Register do
     end
   end
 
-  defp register(conn, phone_number, registration_id, auth_token) do
+  defp register(conn, phone_number, registration_id, auth_token,identity_key) do
     case RegisterNewUser.register_new_user(
            phone_number,
            registration_id,
-           auth_token
+           auth_token,
+           identity_key
          ) do
       :ok ->
         conn

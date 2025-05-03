@@ -6,7 +6,8 @@ defmodule Authentication.Core.RegisterNewUser do
   def register_new_user(
         phone_number,
         registration_id,
-        auth_token
+        auth_token,
+        identity_key
       ) do
     case Users.user_exists?(phone_number) do
       true ->
@@ -15,14 +16,16 @@ defmodule Authentication.Core.RegisterNewUser do
         update_user(
           phone_number,
           registration_id,
-          auth_token
+          auth_token,
+          identity_key
         )
 
       false ->
         create_user(
           phone_number,
           registration_id,
-          auth_token
+          auth_token,
+          identity_key
         )
     end
   end
@@ -30,9 +33,10 @@ defmodule Authentication.Core.RegisterNewUser do
   defp update_user(
          phone_number,
          registration_id,
-         auth_token
+         auth_token,
+         identity_key
        ) do
-    case Users.update_user(phone_number, registration_id) do
+    case Users.update_user(phone_number, registration_id,identity_key) do
       {:ok, user} ->
         case Devices.create_device(user, auth_token) do
           {:ok, _} ->
@@ -52,9 +56,10 @@ defmodule Authentication.Core.RegisterNewUser do
   defp create_user(
          phone_number,
          registration_id,
-         auth_token
+         auth_token,
+         identity_key
        ) do
-    case Users.create_user(phone_number, registration_id) do
+    case Users.create_user(phone_number, registration_id,identity_key) do
       {:ok, user} ->
         case Devices.create_device(user, auth_token) do
           {:ok, _} ->
