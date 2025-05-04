@@ -68,8 +68,7 @@ defmodule Authentication.Core.RegisterWithPin do
       hashed_user_pin = user.registration_lock
       user_pin_salt = user.registration_salt
       hashed_input_pin = :crypto.hash(:sha256, user_pin_salt <> pin)
-
-      if hashed_input_pin == hashed_user_pin do
+      if Base.encode16(hashed_input_pin,case: :lower) == hashed_user_pin do
         RegisterNewUser.register_new_user(phone_number, registration_id, auth_token,identity_key)
       else
         process_incorrect_pin(user)
