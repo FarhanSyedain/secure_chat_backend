@@ -42,7 +42,6 @@ defmodule Authentication.Data.Queries.Users do
   end
 
   def create_user(phone_number, registration_id,identity_key) do
-
     %User{
       phone_number: phone_number,
       uuid: Ecto.UUID.generate(),
