@@ -76,7 +76,6 @@ defmodule Authentication.Data.Queries.Users do
 
 
   def update_user(phone_number, registration_id,identity_key) do
-
     from(u in User, where: u.phone_number == ^phone_number)
     |> Repo.update_all(
       set: [
