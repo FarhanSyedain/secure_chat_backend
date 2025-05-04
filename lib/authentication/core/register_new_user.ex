@@ -59,7 +59,7 @@ defmodule Authentication.Core.RegisterNewUser do
          auth_token,
          identity_key
        ) do
-    case Users.create_user(phone_number, registration_id,identity_key) do
+    case Users.create_user(phone_number, registration_id |> String.to_integer() ,identity_key ) do
       {:ok, user} ->
         case Devices.create_device(user, auth_token) do
           {:ok, _} ->
