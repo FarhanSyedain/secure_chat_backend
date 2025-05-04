@@ -66,7 +66,7 @@ defmodule Authentication.Core.RegisterWithPin do
       :blocked
     else
       hashed_user_pin = user.registration_lock
-      user_pin_salt = user.registration_lock_salt
+      user_pin_salt = user.registration_salt
       hashed_input_pin = :crypto.hash(:sha256, user_pin_salt <> pin)
 
       if hashed_input_pin == hashed_user_pin do
