@@ -59,7 +59,8 @@ defmodule Authentication.Data.Queries.Users do
   end
 
   def get_user(phone_number) do
-    from(u in User, where: u.phone_number == ^phone_number)
+    phone_number_to_utf = phone_number |> :unicode.characters_to_binary(:utf8)
+    from(u in User, where: u.phone_number == ^phone_number_to_utf)
     |> Repo.one()
   end
 
