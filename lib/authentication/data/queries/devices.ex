@@ -16,7 +16,7 @@ defmodule Authentication.Data.Queries.Devices do
       uuid: Ecto.UUID.generate(),
       user_id: user.id
     }
-    |> Repo.insert!()
+    |> Repo.insert()
   end
 
   def deleteAll(user) do
