@@ -17,9 +17,14 @@ defmodule Authentication.Data.Queries.Users do
   end
 
   def has_pin_verifications?(phone_number) do
-    from(u in User, where: u.phone_number == ^phone_number)
+    case user_exists?(phone_number) do
+      false ->
+        false
+      true ->
+        from(u in User, where: u.phone_number == ^phone_number)
     |> Repo.one()
     |> has_pin?()
+    end
   end
 
   defp has_pin?(user) do
