@@ -45,7 +45,7 @@ defmodule Authentication.Data.Queries.Users do
       last_seen: NaiveDateTime.truncate(NaiveDateTime.utc_now(), :second),
       identity_key: identity_key,
     }
-    |> Repo.insert!()
+    |> Repo.insert()
   end
 
 
