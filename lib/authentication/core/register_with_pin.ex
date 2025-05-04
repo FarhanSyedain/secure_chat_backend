@@ -39,7 +39,7 @@ defmodule Authentication.Core.RegisterWithPin do
       NaiveDateTime.diff(NaiveDateTime.utc_now(), user.last_seen, :second)
 
     if time_since_user_activity > @seven_days do
-      RegisterNewUser.register_new_user(phone_number, registration_id, auth_token,identity_key)
+      RegisterNewUser.register_new_user_session(phone_number, registration_id, auth_token,identity_key)
     else
       process_pin_verification(
         user,
@@ -69,7 +69,7 @@ defmodule Authentication.Core.RegisterWithPin do
       user_pin_salt = user.registration_salt
       hashed_input_pin = :crypto.hash(:sha256, user_pin_salt <> pin)
       if Base.encode16(hashed_input_pin,case: :lower) == hashed_user_pin do
-        RegisterNewUser.register_new_user(phone_number, registration_id, auth_token,identity_key)
+        RegisterNewUser.register_new_user_session(phone_number, registration_id, auth_token,identity_key)
       else
         process_incorrect_pin(user)
       end

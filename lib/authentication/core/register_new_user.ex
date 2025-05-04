@@ -3,7 +3,7 @@ defmodule Authentication.Core.RegisterNewUser do
   alias Authentication.Data.Queries.RegistrationSession
   alias Authentication.Data.Queries.Devices
 
-  def register_new_user(
+  def register_new_user_session(
         phone_number,
         registration_id,
         auth_token,
@@ -41,9 +41,7 @@ defmodule Authentication.Core.RegisterNewUser do
         case Devices.create_device(Users.get_user(phone_number), auth_token) do
           {:ok, _} ->
             RegistrationSession.delete(phone_number)
-
             :ok
-
           _ ->
             :error
         end

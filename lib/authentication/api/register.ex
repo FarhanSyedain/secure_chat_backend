@@ -84,7 +84,7 @@ defmodule Authentication.Api.Register do
   end
 
   defp register(conn, phone_number, registration_id, auth_token,identity_key) do
-    case RegisterNewUser.register_new_user(
+    case RegisterNewUser.register_new_user_session(
            phone_number,
            registration_id,
            auth_token,
