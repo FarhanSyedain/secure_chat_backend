@@ -7,11 +7,10 @@ defmodule Authentication.Data.Queries.Devices do
   def create_device(user, auth_token,device_id \\ 1) do
     
     token_salt = Ecto.UUID.generate()
-    token = :crypto.hash(:sha256, token_salt <> auth_token)
-
+    token = :crypto.hash(:sha256, token_salt <> to_string(auth_token))
     %Device{
-      token: token,
-      token_salt: token,
+      token: Base.encode16(token, case: :lower),
+      token_salt: token_salt,
       device_id: device_id,
       uuid: Ecto.UUID.generate(),
       user_id: user.id
