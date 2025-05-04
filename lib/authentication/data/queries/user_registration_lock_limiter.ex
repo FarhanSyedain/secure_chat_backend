@@ -7,7 +7,7 @@ defmodule Authentication.Core.UserRegistrationLockLimiter do
     %UserRegistrationLockLimiter{
       user_id: user.id,
       incorrect_attempt_count: incorrect_attempt_count,
-      last_attempt_time: nil
+      last_attempt_time: NaiveDateTime.truncate(NaiveDateTime.utc_now(), :second)
     }
     |> Repo.insert!()
   end
